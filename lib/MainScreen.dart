@@ -47,7 +47,7 @@ class _MainActivityState extends State<MainActivity> {
 
   var _timeTask = "";
 
-  var _margine = 20.0;
+  var margin = 20.0;
 
   List<TextEditingController> _controllers = [];
 
@@ -103,51 +103,49 @@ class _MainActivityState extends State<MainActivity> {
         floatingActionButton: FloatingActionButton(
           backgroundColor: Colors.black,
           onPressed: () {
+
             showModalBottomSheet(
               isScrollControlled: true,
               backgroundColor: Colors.transparent,
               context: context,
               builder: (context) {
                 return StatefulBuilder(
-                    builder: (BuildContext context, StateSetter setModalState) {
-                  return NotificationListener<DraggableScrollableNotification>(
-                    onNotification: (notification) {
-                      switch (notification.extent.toStringAsFixed(1)) {
-                        case "0.3" || "0.6":
-                          setModalState(() {
-                            _margine = 20.0;
-                          });
-                          break;
-                        case "0.5" || "0.6":
-                          setModalState(() {
-                            _margine = 0.0;
-                          });
-                          break;
-                        default:
-                          setModalState(() {
-                            _margine = 20.0;
-                          });
-                      }
+                  builder: (BuildContext context, StateSetter setModalState) {
+                    return NotificationListener<DraggableScrollableNotification>(
+                      onNotification: (notification) {
 
-                      return true;
-                    },
-                    child: DraggableScrollableSheet(
-                        snap: true,
-                        expand: false,
-                        initialChildSize: 0.3,
-                        maxChildSize: 0.6,
-                        minChildSize: 0.3,
-                        builder: (context, scroll) {
-                          return modalwindow(scroll, setModalState);
-                        }),
-                  );
-                });
+                        switch (notification.extent.toStringAsFixed(1)) {
+                          case "0.3" || "0.4": setModalState(() {margin = 20.0;}); break;
+                          case "0.5" || "0.6": setModalState(() {margin = 0.0;}); break;
+                          default: setModalState(() {margin = 20.0;});
+                        }
+
+                        if (notification.extent == notification.minExtent) {
+                          Navigator.pop(context);
+                        }
+
+                        return true;
+
+                      },
+                      child: DraggableScrollableSheet(
+                          snap: true,
+                          expand: false,
+                          initialChildSize: 0.3,
+                          maxChildSize: 0.6,
+                          minChildSize: 0.29,
+                          builder: (context, scroll){
+                            return modalwindow(scroll, setModalState);
+                          }),
+                    );
+                  },
+                );
               },
             ).whenComplete(() {
               setState(() {
-                _margine = 20.0;
+                margin = 20.0;
               });
             });
+
           },
           child: const Icon(
             Icons.add,
@@ -162,14 +160,14 @@ class _MainActivityState extends State<MainActivity> {
 
   Widget modalwindow(controller, StateSetter setModalState) {
     return AnimatedContainer(
-      duration: Duration(microseconds: 100),
+      duration: Duration(milliseconds: 100),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(25),
       ),
       height: MediaQuery.of(context).size.height,
       margin:
-          EdgeInsets.only(left: _margine, right: _margine, bottom: _margine),
+          EdgeInsets.only(left: margin, right: margin, bottom: margin),
       padding: EdgeInsets.symmetric(horizontal: 15),
       width: MediaQuery.of(context).size.width,
       child: ListView(
