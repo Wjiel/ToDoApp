@@ -497,21 +497,21 @@ class _MainActivityState extends State<MainActivity> {
                 children: [
                   Expanded(
                     flex: 10,
-                    child: Container(
-                      child: GridView.count(
-                        childAspectRatio: 2 / .4,
-                        crossAxisCount: 2,
-                        children: List.generate(
-                          Infos[i].StepName.length,
-                          (index) {
-                            return Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Checkbox(
+                    child: GridView.count(
+                      childAspectRatio: 2 / .4,
+                      crossAxisCount: 2,
+                      children: List.generate(
+                        Infos[i].StepName.length,
+                            (index) {
+                          return Row(
+                            children: [
+                              Expanded(
+                                flex: 2,
+                                child: Checkbox(
                                   value: Infos[i].isChanged[index],
                                   activeColor: _textcolors[i],
-                                  side: MaterialStateBorderSide.resolveWith(
-                                      (states) =>
+                                  side: WidgetStateBorderSide.resolveWith(
+                                          (states) =>
                                           BorderSide(color: _textcolors[i])),
                                   onChanged: (bool? value) {
                                     setState(() {
@@ -526,21 +526,25 @@ class _MainActivityState extends State<MainActivity> {
                                     });
                                   },
                                 ),
-                                Container(
-                                  width: 150,
+                              ),
+
+                              Expanded(
+                                flex: 5,
+                                child: Container(
                                   child: Text(
                                     "${Infos[i].StepName[index]}",
                                     style: TextStyle(
                                       color: _textcolors[i],
                                     ),
                                     overflow: TextOverflow.ellipsis,
-                                    maxLines: 2,
+                                    maxLines: 1,
                                   ),
                                 ),
-                              ],
-                            );
-                          },
-                        ),
+                              )
+
+                            ],
+                          );
+                        },
                       ),
                     ),
                   ),
