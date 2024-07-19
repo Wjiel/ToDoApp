@@ -86,7 +86,7 @@ Future LoadSave() async {
 }
 
 void TapSend() async {
-  if (IController3.text != null) {
+  if (IController3.text != "") {
     if (isPassword == false) {
       _savePassword = _password;
       SharedPreferences prefs = await SharedPreferences.getInstance();

@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:untitled/InfoCard.dart';
 
@@ -28,17 +27,8 @@ class _MainActivityState extends State<MainActivity> {
     Color(0xFF53331B),
   ];
 
-  @override
-  void initState() {
-    super.initState();
-    Infos[0].setName = "das";
-    Infos[0].setTime = "21";
-    Infos[0].setNameStep = [
-      "weqddddddddd ddddddddd dddddddd ddddddd dddddddd dd",
-      "wqes",
-      "das"
-    ];
-  }
+  List<String> _choicesItemModalWindow = ["Удалить"];
+  List<String> _choicesItemTask = ["Удалить", "Выполнить"];
 
   var scroll = ScrollController();
 
@@ -103,7 +93,6 @@ class _MainActivityState extends State<MainActivity> {
         floatingActionButton: FloatingActionButton(
           backgroundColor: Colors.black,
           onPressed: () {
-
             showModalBottomSheet(
               isScrollControlled: true,
               backgroundColor: Colors.transparent,
@@ -111,13 +100,24 @@ class _MainActivityState extends State<MainActivity> {
               builder: (context) {
                 return StatefulBuilder(
                   builder: (BuildContext context, StateSetter setModalState) {
-                    return NotificationListener<DraggableScrollableNotification>(
+                    return NotificationListener<
+                        DraggableScrollableNotification>(
                       onNotification: (notification) {
-
                         switch (notification.extent.toStringAsFixed(1)) {
-                          case "0.3" || "0.4": setModalState(() {margin = 20.0;}); break;
-                          case "0.5" || "0.6": setModalState(() {margin = 0.0;}); break;
-                          default: setModalState(() {margin = 20.0;});
+                          case "0.3" || "0.4":
+                            setModalState(() {
+                              margin = 20.0;
+                            });
+                            break;
+                          case "0.5" || "0.6":
+                            setModalState(() {
+                              margin = 0.0;
+                            });
+                            break;
+                          default:
+                            setModalState(() {
+                              margin = 20.0;
+                            });
                         }
 
                         if (notification.extent == notification.minExtent) {
@@ -125,15 +125,14 @@ class _MainActivityState extends State<MainActivity> {
                         }
 
                         return true;
-
                       },
                       child: DraggableScrollableSheet(
                           snap: true,
                           expand: false,
                           initialChildSize: 0.3,
-                          maxChildSize: 0.6,
-                          minChildSize: 0.29,
-                          builder: (context, scroll){
+                          maxChildSize: 0.7,
+                          minChildSize: 0.3,
+                          builder: (context, scroll) {
                             return modalwindow(scroll, setModalState);
                           }),
                     );
@@ -145,7 +144,6 @@ class _MainActivityState extends State<MainActivity> {
                 margin = 20.0;
               });
             });
-
           },
           child: const Icon(
             Icons.add,
@@ -156,8 +154,6 @@ class _MainActivityState extends State<MainActivity> {
     );
   }
 
-  List<String> _choicesItemModalWindow = ["Удалить"];
-
   Widget modalwindow(controller, StateSetter setModalState) {
     return AnimatedContainer(
       duration: Duration(milliseconds: 100),
@@ -166,8 +162,7 @@ class _MainActivityState extends State<MainActivity> {
         borderRadius: BorderRadius.circular(25),
       ),
       height: MediaQuery.of(context).size.height,
-      margin:
-          EdgeInsets.only(left: margin, right: margin, bottom: margin),
+      margin: EdgeInsets.only(left: margin, right: margin, bottom: margin),
       padding: EdgeInsets.symmetric(horizontal: 15),
       width: MediaQuery.of(context).size.width,
       child: ListView(
@@ -180,8 +175,7 @@ class _MainActivityState extends State<MainActivity> {
               height: 8,
               width: 40,
               decoration: BoxDecoration(
-                  color: Colors.black,
-                  borderRadius: BorderRadius.circular(15)),
+                  color: Colors.black, borderRadius: BorderRadius.circular(15)),
             ),
           ),
           AutoSizeText(
@@ -362,51 +356,13 @@ class _MainActivityState extends State<MainActivity> {
     );
   }
 
-  void _showTimePicker(StateSetter setModalState) async {
-    final TimeOfDay? result = await showTimePicker(
-        context: context, initialTime: TimeOfDay(hour: 24, minute: 0));
-    if (result != null) {
-      setModalState(() {
-        _timeTask = result.format(context);
-      });
-    }
-  }
-
-  void _safeInfoWithModalWindow() {
-    setState(() {
-      Infos.add(new infoTask());
-      Infos[Infos.length - 1].setName = _controller.text;
-
-      Infos[Infos.length - 1].setTime = _timeTask;
-
-      List<String> _stepName = [];
-
-      for (int i = 0; i < _countStep; i++) {
-        _stepName.add(_controllers[i].text);
-      }
-
-      Infos[Infos.length - 1].setNameStep = _stepName;
-    });
-
-    for (int i = 0; i < _countStep; i++) {
-      _controllers[i].text = "";
-    }
-    _controller.text = "";
-    _timeTask = "";
-    _countStep = 0;
-
-    Navigator.pop(context);
-  }
-
-  double reverse = 90;
-  bool isReferse = false;
-
   Widget Task(i) {
-    return Container(
+    return AnimatedContainer(
+        duration: Duration(milliseconds: 300),
         padding: EdgeInsets.symmetric(horizontal: 15, vertical: 20),
         key: ValueKey(i),
         margin: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-        height: 250,
+        height: Infos[i].heigthCart,
         width: MediaQuery.of(context).size.width,
         decoration: BoxDecoration(
             color: _colors[i],
@@ -434,10 +390,10 @@ class _MainActivityState extends State<MainActivity> {
                         shape: BoxShape.circle, color: _textcolors[i]),
                     child: InkWell(
                       child: RotationTransition(
-                        turns: AlwaysStoppedAnimation(reverse / 360),
+                        turns: AlwaysStoppedAnimation(Infos[i].reverse / 360),
                         child: AnimatedRotation(
-                          turns: reverse,
-                          duration: Duration(milliseconds: 200),
+                          turns: Infos[i].reverse,
+                          duration: Duration(milliseconds: 300),
                           child: Icon(
                             Icons.chevron_right_rounded,
                             color: Colors.white,
@@ -446,14 +402,7 @@ class _MainActivityState extends State<MainActivity> {
                         ),
                       ),
                       onTap: () {
-                        isReferse = !isReferse;
-
-                        setState(() {
-                          if (isReferse)
-                            reverse -= 180 / 360;
-                          else
-                            reverse -= -180 / 360;
-                        });
+                        if (Infos[i].StepName.length > 6) _openStep(i);
                       },
                     ))
               ],
@@ -490,60 +439,129 @@ class _MainActivityState extends State<MainActivity> {
             SizedBox(
               height: 8,
             ),
-            Container(
-              height: 90,
+            AnimatedContainer(
+              height: Infos[i].heigthGridView,
+              duration: Duration(milliseconds: 300),
               width: MediaQuery.of(context).size.width,
               child: Row(
                 children: [
                   Expanded(
                     flex: 10,
                     child: GridView.count(
-                      childAspectRatio: 2 / .4,
+                      //  physics: NeverScrollableScrollPhysics(),
+                      childAspectRatio: 2 / .3,
                       crossAxisCount: 2,
                       children: List.generate(
                         Infos[i].StepName.length,
-                            (index) {
-                          return Row(
-                            children: [
-                              Expanded(
-                                flex: 2,
-                                child: Checkbox(
-                                  value: Infos[i].isChanged[index],
-                                  activeColor: _textcolors[i],
-                                  side: WidgetStateBorderSide.resolveWith(
-                                          (states) =>
-                                          BorderSide(color: _textcolors[i])),
-                                  onChanged: (bool? value) {
-                                    setState(() {
-                                      Infos[i].isChanged[index] = value!;
+                        (index) {
+                          if (Infos[i].StepName.length < 7) {
+                            return Row(
+                              children: [
+                                Expanded(
+                                  flex: 2,
+                                  child: Checkbox(
+                                    value: Infos[i].isChanged[index],
+                                    activeColor: _textcolors[i],
+                                    side: MaterialStateBorderSide.resolveWith(
+                                        (states) => BorderSide(
+                                            width: 1.0, color: _textcolors[i])),
+                                    onChanged: (bool? value) {
+                                      setState(() {
+                                        Infos[i].isChanged[index] = value!;
 
-                                      if (Infos[i].isChanged[index])
-                                        Infos[i].proccent +=
-                                            1 / Infos[i].isChanged.length;
-                                      else
-                                        Infos[i].proccent -=
-                                            1 / Infos[i].isChanged.length;
-                                    });
-                                  },
-                                ),
-                              ),
-
-                              Expanded(
-                                flex: 5,
-                                child: Container(
-                                  child: Text(
-                                    "${Infos[i].StepName[index]}",
-                                    style: TextStyle(
-                                      color: _textcolors[i],
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
+                                        if (Infos[i].isChanged[index])
+                                          Infos[i].proccent +=
+                                              1 / Infos[i].isChanged.length;
+                                        else
+                                          Infos[i].proccent -=
+                                              1 / Infos[i].isChanged.length;
+                                      });
+                                    },
                                   ),
                                 ),
-                              )
+                                Expanded(
+                                  flex: 5,
+                                  child: Container(
+                                    child: Text(
+                                      "${Infos[i].StepName[index]}",
+                                      style: TextStyle(
+                                        color: _textcolors[i],
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                    ),
+                                  ),
+                                )
+                              ],
+                            );
+                          } else {
+                            if (index <= 4 || Infos[i].isOpen == true) {
+                              return Row(
+                                children: [
+                                  Expanded(
+                                    flex: 2,
+                                    child: Checkbox(
+                                      value: Infos[i].isChanged[index],
+                                      activeColor: _textcolors[i],
+                                      side: MaterialStateBorderSide.resolveWith(
+                                          (states) => BorderSide(
+                                              width: 1.0,
+                                              color: _textcolors[i])),
+                                      onChanged: (bool? value) {
+                                        setState(() {
+                                          Infos[i].isChanged[index] = value!;
 
-                            ],
-                          );
+                                          if (Infos[i].isChanged[index])
+                                            Infos[i].proccent +=
+                                                1 / Infos[i].isChanged.length;
+                                          else
+                                            Infos[i].proccent -=
+                                                1 / Infos[i].isChanged.length;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 5,
+                                    child: Container(
+                                      child: Text(
+                                        "${Infos[i].StepName[index]}",
+                                        style: TextStyle(
+                                          color: _textcolors[i],
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              );
+                            } else {
+                              if (index == 5) {
+                                return Row(
+                                  children: [
+                                    Expanded(
+                                        child: Container(
+                                            child: InkWell(
+                                                onTap: () {
+                                                  setState(() {
+                                                    _openStep(i);
+                                                  });
+                                                },
+                                                child: Text(
+                                                  "    Еще ${Infos[i].StepName.length - 5} шага...",
+                                                  style: TextStyle(
+                                                      color: _textcolors[i]),
+                                                )))),
+                                  ],
+                                );
+                              } else {
+                                return SizedBox(
+                                  height: 0,
+                                );
+                              }
+                            }
+                          }
                         },
                       ),
                     ),
@@ -551,14 +569,28 @@ class _MainActivityState extends State<MainActivity> {
                   Expanded(
                       child: Container(
                     alignment: Alignment.topRight,
-                    child: InkWell(
-                      onTap: () {},
-                      child: Icon(
-                        Icons.more_vert,
-                        size: 50,
-                        color: _textcolors[i],
-                      ),
+                    child: PopupMenuButton(
+                      color: Colors.white,
+                      itemBuilder: (BuildContext context) {
+                        return _choicesItemTask.map((String choice) {
+                          return PopupMenuItem<String>(
+                            value: choice,
+                            child: Text(choice),
+                            onTap: () {
+                              Menu(i, choice);
+                            },
+                          );
+                        }).toList();
+                      },
                     ),
+                    //     (
+                    //   onTap: () {},
+                    //   child: Icon(
+                    //     Icons.more_vert,
+                    //     size: 50,
+                    //     color: _textcolors[i],
+                    //   ),
+                    // ),
                   ))
                 ],
               ),
@@ -594,5 +626,79 @@ class _MainActivityState extends State<MainActivity> {
             ),
           ],
         ));
+  }
+
+  void _showTimePicker(StateSetter setModalState) async {
+    final TimeOfDay? result = await showTimePicker(
+        context: context, initialTime: TimeOfDay(hour: 24, minute: 0));
+    if (result != null) {
+      setModalState(() {
+        _timeTask = result.format(context);
+      });
+    }
+  }
+
+  void _safeInfoWithModalWindow() {
+    setState(() {
+      Infos.add(new infoTask());
+      Infos[Infos.length - 1].setName = _controller.text;
+
+      Infos[Infos.length - 1].setTime = _timeTask;
+
+      List<String> _stepName = [];
+
+      for (int i = 0; i < _countStep; i++) {
+        _stepName.add(_controllers[i].text);
+      }
+
+      Infos[Infos.length - 1].setNameStep = _stepName;
+    });
+
+    for (int i = 0; i < _countStep; i++) {
+      _controllers[i].text = "";
+    }
+    _controller.text = "";
+    _timeTask = "";
+    _countStep = 0;
+
+    Navigator.pop(context);
+  }
+
+  int extraStep = 0;
+
+  void _openStep(int i) {
+    Infos[i].setReversed = !Infos[i].isReverse;
+
+    setState(() {
+      if (Infos[i].isReverse) {
+        Infos[i].setReverse = -90 / 360;
+
+        Infos[i].setHeigthGridView = Infos[i].heigthGridView + getHeigth(i);
+        Infos[i].setHeigthCart = Infos[i].heigthCart + getHeigth(i);
+      } else {
+        Infos[i].setReverse = 90 / 360;
+
+        Infos[i].setHeigthGridView = Infos[i].heigthGridView - getHeigth(i);
+        Infos[i].setHeigthCart = Infos[i].heigthCart - getHeigth(i);
+      }
+
+      Infos[i].setOpen = !Infos[i].isOpen;
+    });
+  }
+
+  double getHeigth(int i) {
+    return 23 * ((Infos[i].StepName.length - 5) / 2);
+  }
+
+  void Menu(int index, String chouse) {
+    if (chouse == "Удалить") {
+      setState(() {
+        Infos.removeAt(index);
+      });
+    } else if (chouse == "Выполнить") {
+      setState(() {
+        Infos[index].setChanged = true;
+      });
+    }
   }
 }
