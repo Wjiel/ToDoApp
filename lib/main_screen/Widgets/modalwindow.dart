@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class modalwindow extends StatefulWidget {
   final controller;
@@ -16,7 +17,10 @@ class modalwindow extends StatefulWidget {
 }
 
 class _modalwindowState extends State<modalwindow> {
-  var _timeTask = "";
+  final TextEditingController controllerGoal = new TextEditingController();
+  final List<TextEditingController> controllersStep = [];
+
+  String _timeTask = '';
 
   void _showTimePicker(StateSetter setModalState) async {
     final TimeOfDay? result = await showTimePicker(
@@ -28,6 +32,23 @@ class _modalwindowState extends State<modalwindow> {
         _timeTask = result.format(context);
       });
     }
+  }
+
+  Future saveDataCard() async {
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+
+    List<String> stepData = [
+      for (int i = 0; i < controllersStep.length; i++) controllersStep[i].text,
+    ];
+
+    final data = {
+      'goal': controllerGoal.text,
+      'time': _timeTask,
+      'step': stepData,
+    };
+    _prefs.setString('infoCard', data.toString());
+
+    print(_prefs.getString('infoCard'));
   }
 
   @override
@@ -43,40 +64,45 @@ class _modalwindowState extends State<modalwindow> {
         right: widget.margin,
         bottom: widget.margin,
       ),
-      padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: ListView(
         controller: widget.controller,
         children: [
-          FittedBox(
-            fit: BoxFit.scaleDown,
+          Center(
             child: Container(
               height: 8,
               width: 40,
               decoration: BoxDecoration(
                 color: Colors.black,
-                borderRadius: BorderRadius.circular(15),
+                borderRadius: BorderRadius.circular(30),
               ),
             ),
           ),
+
           Text(
             "Новая задача",
             style: TextStyle(
               color: Colors.black,
               fontWeight: FontWeight.w900,
-              fontSize: 25,
+              fontSize: 30,
             ),
           ),
+
           SizedBox(height: 10),
+
           Text(
             "Цель",
             style: TextStyle(
               color: Colors.black,
               fontWeight: FontWeight.w600,
-              fontSize: 15,
+              fontSize: 25,
             ),
           ),
+
           SizedBox(height: 10),
+
           TextField(
+            controller: controllerGoal,
             decoration: InputDecoration(
               filled: true,
               enabledBorder: OutlineInputBorder(
@@ -85,21 +111,15 @@ class _modalwindowState extends State<modalwindow> {
               ),
             ),
           ),
+
           SizedBox(height: 15),
+
           Text(
             "Время",
             style: TextStyle(
               color: Colors.black,
-              fontWeight: FontWeight.w700,
-              fontSize: 20,
-            ),
-          ),
-          Text(
-            _timeTask == "" ? "неограничено" : _timeTask,
-            style: TextStyle(
-              color: Colors.black,
               fontWeight: FontWeight.w600,
-              fontSize: 15,
+              fontSize: 25,
             ),
           ),
 
@@ -120,11 +140,12 @@ class _modalwindowState extends State<modalwindow> {
                     borderRadius: BorderRadius.circular(5),
                   ),
                   child: Text(
-                    "Выбрать",
+                    _timeTask.isEmpty ? "неограничено" : _timeTask,
                     textAlign: TextAlign.center,
                     style: TextStyle(
+                      fontSize: 15,
                       color: Colors.white,
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
@@ -136,11 +157,12 @@ class _modalwindowState extends State<modalwindow> {
 
           Text(
             "Шаги",
-            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
+            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 25),
           ),
+
           Column(
             children: List.generate(
-              0,
+              controllersStep.length,
               (index) => Column(
                 children: [
                   SizedBox(height: 5),
@@ -148,7 +170,7 @@ class _modalwindowState extends State<modalwindow> {
                     children: [
                       Expanded(
                         child: Text(
-                          "${index += 1}.",
+                          "${index + 1}.",
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontWeight: FontWeight.w800,
@@ -163,7 +185,7 @@ class _modalwindowState extends State<modalwindow> {
                             color: Colors.grey[300],
                           ),
                           child: TextField(
-                            //        controller: _controllers[index -= 1],
+                            controller: controllersStep[index],
                             decoration: InputDecoration(
                               focusedBorder: InputBorder.none,
                               enabledBorder: InputBorder.none,
@@ -207,8 +229,7 @@ class _modalwindowState extends State<modalwindow> {
             child: ElevatedButton(
               onPressed: () {
                 widget.setModalState(() {
-                  //         _controllers.add(new TextEditingController());
-                  //       _countStep += 1;
+                  controllersStep.add(new TextEditingController());
                 });
               },
               style: ButtonStyle(
@@ -223,12 +244,14 @@ class _modalwindowState extends State<modalwindow> {
               ),
             ),
           ),
+
           SizedBox(height: 20),
+
           Material(
             color: Colors.transparent,
             child: InkWell(
               onTap: () {
-                //_safeInfoWithModalWindow();
+                saveDataCard();
               },
               child: Ink(
                 padding: EdgeInsets.symmetric(vertical: 10),
@@ -240,9 +263,9 @@ class _modalwindowState extends State<modalwindow> {
                   "Сохранить",
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 15,
+                    fontSize: 20,
                     color: Colors.white,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),

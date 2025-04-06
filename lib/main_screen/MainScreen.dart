@@ -27,7 +27,7 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: ListView(
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 40),
         children: [
           Text(
             "Задачи",
@@ -37,6 +37,7 @@ class _MainScreenState extends State<MainScreen> {
               color: Colors.black,
             ),
           ),
+
           ReorderableListView.builder(
             shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(),
@@ -58,6 +59,7 @@ class _MainScreenState extends State<MainScreen> {
           ),
         ],
       ),
+
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.black,
         onPressed: () {
@@ -398,34 +400,6 @@ class _MainScreenState extends State<MainScreen> {
       ),
     );
   }
-
-  void _safeInfoWithModalWindow() {
-    setState(() {
-      Infos.add(new infoTask());
-      Infos[Infos.length - 1].setName = _controller.text;
-
-      //    Infos[Infos.length - 1].setTime = _timeTask;
-
-      List<String> _stepName = [];
-
-      for (int i = 0; i < _countStep; i++) {
-        _stepName.add(_controllers[i].text);
-      }
-
-      Infos[Infos.length - 1].setNameStep = _stepName;
-    });
-
-    for (int i = 0; i < _countStep; i++) {
-      _controllers[i].text = "";
-    }
-    _controller.text = "";
-    //  _timeTask = "";
-    _countStep = 0;
-
-    Navigator.pop(context);
-  }
-
-  int extraStep = 0;
 
   void _openStep(int i) {
     Infos[i].setReversed = !Infos[i].isReverse;
