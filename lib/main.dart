@@ -1,13 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:untitled/Login.dart';
-import 'package:untitled/MainScreen.dart';
+import 'package:untitled/main_screen/MainScreen.dart';
 
-void main() => runApp(MyApp());
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(home:  MainActivity());
-  }
+void main() {
+  runApp(MaterialApp(debugShowCheckedModeBanner: false, home: MainScreen()));
 }
-
