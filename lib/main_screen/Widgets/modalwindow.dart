@@ -1,14 +1,14 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class modalwindow extends StatefulWidget {
   final controller;
-  final StateSetter setModalState;
   final margin;
   const modalwindow({
     super.key,
     required this.controller,
-    required this.setModalState,
     required this.margin,
   });
 
@@ -22,33 +22,53 @@ class _modalwindowState extends State<modalwindow> {
 
   String _timeTask = '';
 
-  void _showTimePicker(StateSetter setModalState) async {
+  final List<String> _choicesItemModalWindow = ["Удалить"];
+
+  void _showTimePicker() async {
     final TimeOfDay? result = await showTimePicker(
       context: context,
       initialTime: TimeOfDay(hour: 24, minute: 0),
     );
     if (result != null) {
-      setModalState(() {
-        _timeTask = result.format(context);
-      });
+      _timeTask = result.format(context);
+      setState(() {});
     }
   }
 
   Future saveDataCard() async {
     SharedPreferences _prefs = await SharedPreferences.getInstance();
+    List<String>? datas = _prefs.getStringList('datas');
 
-    List<String> stepData = [
-      for (int i = 0; i < controllersStep.length; i++) controllersStep[i].text,
-    ];
+    if (datas == null) {
+      List<String> dt = [];
+      List<Map<String, dynamic>> stepData = [
+        for (int i = 0; i < controllersStep.length; i++)
+          {'name': controllersStep[i].text, 'value': false},
+      ];
 
-    final data = {
-      'goal': controllerGoal.text,
-      'time': _timeTask,
-      'step': stepData,
-    };
-    _prefs.setString('infoCard', data.toString());
+      Map<String, dynamic> data = {
+        'goal': controllerGoal.text,
+        'time': _timeTask,
+        'step': stepData,
+      };
+      dt.add(jsonEncode(data));
+      _prefs.setStringList('datas', dt);
+    } else {
+      List<Map<String, dynamic>> stepData = [
+        for (int i = 0; i < controllersStep.length; i++)
+          {'name': controllersStep[i].text, 'value': false},
+      ];
 
-    print(_prefs.getString('infoCard'));
+      Map<String, dynamic> data = {
+        'goal': controllerGoal.text,
+        'time': _timeTask,
+        'step': stepData,
+      };
+      datas.add(jsonEncode(data));
+      _prefs.setStringList('datas', datas);
+    }
+
+    Navigator.pop(context);
   }
 
   @override
@@ -131,7 +151,7 @@ class _modalwindowState extends State<modalwindow> {
               color: Colors.transparent,
               child: InkWell(
                 onTap: () {
-                  _showTimePicker(widget.setModalState);
+                  _showTimePicker();
                 },
                 child: Ink(
                   padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
@@ -194,52 +214,54 @@ class _modalwindowState extends State<modalwindow> {
                         ),
                         flex: 9,
                       ),
-                      //               Expanded(
-                      //                 child: Container(
-                      //                   child: PopupMenuButton(
-                      //                     color: Colors.white,
-                      //                     itemBuilder: (BuildContext context) {
-                      //                       return _choicesItemModalWindow.map((
-                      //                         String choice,
-                      //                       ) {
-                      //                         return PopupMenuItem<String>(
-                      //                           value: choice,
-                      //                           child: Text(choice),
-                      //                           onTap: () {
-                      //                             widget.setModalState(() {
-                      // //                              _countStep -= 1;
-                      //   //                            _controllers.removeAt(index);
-                      //                             });
-                      //                           },
-                      //                         );
-                      //                       }).toList();
-                      //                     },
-                      //                   ),
-                      //                 ),
-                      //               ),
+                      Expanded(
+                        child: PopupMenuButton(
+                          color: Colors.white,
+                          itemBuilder: (BuildContext context) {
+                            return _choicesItemModalWindow.map((String choice) {
+                              return PopupMenuItem<String>(
+                                value: choice,
+                                child: Text(choice),
+                                onTap: () {
+                                  controllersStep.removeAt(index);
+                                  setState(() {});
+                                },
+                              );
+                            }).toList();
+                          },
+                        ),
+                      ),
                     ],
                   ),
                 ],
               ),
             ),
           ),
-          Container(
-            padding: EdgeInsets.symmetric(vertical: 10),
-            alignment: Alignment.center,
-            child: ElevatedButton(
-              onPressed: () {
-                widget.setModalState(() {
-                  controllersStep.add(new TextEditingController());
-                });
-              },
-              style: ButtonStyle(
-                backgroundColor: MaterialStatePropertyAll(Colors.black),
-              ),
-              child: Text(
-                "Добавить",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w700,
+
+          SizedBox(height: 20),
+
+          Center(
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () {
+                  controllersStep.add(TextEditingController());
+                  setState(() {});
+                },
+                child: Ink(
+                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 30),
+                  decoration: BoxDecoration(
+                    color: Colors.black,
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: Text(
+                    "Добавить",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
               ),
             ),

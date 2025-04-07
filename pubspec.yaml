@@ -8,7 +8,7 @@ environment:
   sdk: ^3.7.0-323.0
 
 dependencies:
-#  getwidget: ^6.0.0
+  getwidget: ^6.0.0
   shared_preferences: ^2.0.15
   auto_size_text: ^3.0.0
   auto_size_text_field: ^2.2.3
