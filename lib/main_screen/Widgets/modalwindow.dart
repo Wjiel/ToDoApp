@@ -36,6 +36,8 @@ class _modalwindowState extends State<modalwindow> {
   }
 
   Future saveDataCard() async {
+    if (controllerGoal.text.isEmpty) {}
+
     SharedPreferences _prefs = await SharedPreferences.getInstance();
     List<String>? datas = _prefs.getStringList('datas');
 
@@ -119,6 +121,9 @@ class _modalwindowState extends State<modalwindow> {
               focusedBorder: OutlineInputBorder(
                 borderSide: BorderSide(color: Colors.transparent),
                 borderRadius: BorderRadius.circular(30),
+              ),
+              errorBorder: const OutlineInputBorder(
+                borderSide: BorderSide(width: 3, color: Colors.red),
               ),
             ),
           ),
