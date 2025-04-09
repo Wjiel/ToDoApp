@@ -39,34 +39,21 @@ class _modalwindowState extends State<modalwindow> {
     SharedPreferences _prefs = await SharedPreferences.getInstance();
     List<String>? datas = _prefs.getStringList('datas');
 
-    if (datas == null) {
-      List<String> dt = [];
-      List<Map<String, dynamic>> stepData = [
-        for (int i = 0; i < controllersStep.length; i++)
-          {'name': controllersStep[i].text, 'value': false},
-      ];
+    datas ??= [];
 
-      Map<String, dynamic> data = {
-        'goal': controllerGoal.text,
-        'time': _timeTask,
-        'step': stepData,
-      };
-      dt.add(jsonEncode(data));
-      _prefs.setStringList('datas', dt);
-    } else {
-      List<Map<String, dynamic>> stepData = [
-        for (int i = 0; i < controllersStep.length; i++)
-          {'name': controllersStep[i].text, 'value': false},
-      ];
+    List<Map<String, dynamic>> stepData = [
+      for (int i = 0; i < controllersStep.length; i++)
+        {'name': controllersStep[i].text, 'value': false},
+    ];
 
-      Map<String, dynamic> data = {
-        'goal': controllerGoal.text,
-        'time': _timeTask,
-        'step': stepData,
-      };
-      datas.add(jsonEncode(data));
-      _prefs.setStringList('datas', datas);
-    }
+    Map<String, dynamic> data = {
+      'goal': controllerGoal.text,
+      'time': _timeTask,
+      'step': stepData,
+    };
+
+    datas.add(jsonEncode(data));
+    _prefs.setStringList('datas', datas);
 
     Navigator.pop(context);
   }
@@ -126,6 +113,10 @@ class _modalwindowState extends State<modalwindow> {
             decoration: InputDecoration(
               filled: true,
               enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.transparent),
+                borderRadius: BorderRadius.circular(30),
+              ),
+              focusedBorder: OutlineInputBorder(
                 borderSide: BorderSide(color: Colors.transparent),
                 borderRadius: BorderRadius.circular(30),
               ),
@@ -199,37 +190,36 @@ class _modalwindowState extends State<modalwindow> {
                         ),
                       ),
                       Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: Colors.grey[300],
-                          ),
-                          child: TextField(
-                            controller: controllersStep[index],
-                            decoration: InputDecoration(
-                              focusedBorder: InputBorder.none,
-                              enabledBorder: InputBorder.none,
+                        flex: 8,
+                        child: TextField(
+                          controller: controllersStep[index],
+                          decoration: InputDecoration(
+                            filled: true,
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.transparent),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.transparent),
+                              borderRadius: BorderRadius.circular(10),
                             ),
                           ),
                         ),
-                        flex: 9,
                       ),
-                      Expanded(
-                        child: PopupMenuButton(
-                          color: Colors.white,
-                          itemBuilder: (BuildContext context) {
-                            return _choicesItemModalWindow.map((String choice) {
-                              return PopupMenuItem<String>(
-                                value: choice,
-                                child: Text(choice),
-                                onTap: () {
-                                  controllersStep.removeAt(index);
-                                  setState(() {});
-                                },
-                              );
-                            }).toList();
-                          },
-                        ),
+                      PopupMenuButton(
+                        color: Colors.white,
+                        itemBuilder: (BuildContext context) {
+                          return _choicesItemModalWindow.map((String choice) {
+                            return PopupMenuItem<String>(
+                              value: choice,
+                              child: Text(choice),
+                              onTap: () {
+                                controllersStep.removeAt(index);
+                                setState(() {});
+                              },
+                            );
+                          }).toList();
+                        },
                       ),
                     ],
                   ),

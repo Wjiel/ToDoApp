@@ -1,5 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:getwidget/components/progress_bar/gf_progress_bar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:untitled/main_screen/MainScreen.dart';
 
 class CardTask extends StatefulWidget {
   int i;
@@ -19,20 +23,67 @@ class CardTask extends StatefulWidget {
 }
 
 class _CardTaskState extends State<CardTask> {
-  final List<String> _choicesItemTask = ["Удалить", "Выполнить"];
+  final List<String> _choicesItemTask = ["Удалить"];
 
   bool isOpen = false;
+  @override
+  void initState() {
+    super.initState();
 
-  void Menu(int index, String chouse) {
-    // if (chouse == "Удалить") {
-    //   setState(() {
-    //     Infos.removeAt(index);
-    //   });
-    // } else if (chouse == "Выполнить") {
-    //   setState(() {
-    //     Infos[index].setChanged = true;
-    //   });
-    // }
+    updateProcent();
+  }
+
+  Future updateData(int index, bool value) async {
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+
+    List<String>? dt = _prefs.getStringList('datas');
+    List<Map<String, dynamic>> datas = [];
+
+    for (int i = 0; i < dt!.length; i++) {
+      datas.add(jsonDecode(dt[i]));
+    }
+
+    datas[widget.i]['step'][index]['value'] = value;
+
+    List<String> data = [];
+
+    for (int i = 0; i < datas.length; i++) {
+      data.add(jsonEncode(datas[i]));
+    }
+
+    _prefs.setStringList('datas', data);
+    updateProcent();
+    setState(() {});
+  }
+
+  Future Menu(int index, String chouse) async {
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+
+    List<String>? dt = _prefs.getStringList('datas');
+
+    List<Map<String, dynamic>> datas = [];
+
+    for (int i = 0; i < dt!.length; i++) {
+      datas.add(jsonDecode(dt[i]));
+    }
+    if (chouse == "Удалить") {
+      datas.removeAt(index);
+
+      List<String> data = [];
+
+      for (int i = 0; i < datas.length; i++) {
+        data.add(jsonEncode(datas[i]));
+      }
+
+      _prefs.setStringList('datas', data);
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => MainScreen()),
+      );
+    }
+
+    setState(() {});
   }
 
   @override
@@ -136,7 +187,12 @@ class _CardTaskState extends State<CardTask> {
                     mainAxisExtent: 20,
                     mainAxisSpacing: 10,
                   ),
-                  itemCount: widget.data['step'].length,
+                  itemCount:
+                      widget.data['step'].length > 6
+                          ? isOpen
+                              ? widget.data['step'].length
+                              : 6
+                          : widget.data['step'].length,
                   itemBuilder: (context, index) {
                     return Row(
                       children: [
@@ -147,10 +203,8 @@ class _CardTaskState extends State<CardTask> {
                             (states) => BorderSide(color: widget.textColor),
                           ),
                           onChanged: (bool? value) {
-                            setState(() {
-                              widget.data['step'][index]['value'] = value;
-                              updateProcent();
-                            });
+                            widget.data['step'][index]['value'] = value;
+                            updateData(index, value!);
                           },
                         ),
                         Text(

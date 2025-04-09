@@ -53,13 +53,20 @@ class _MainScreenState extends State<MainScreen> {
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
                 padding: EdgeInsets.all(0),
-                itemBuilder:
-                    (context, i) => CardTask(
-                      i: i,
-                      textColor: textcolors[i],
-                      backgroundColor: colors[i],
-                      data: snapshot.data[i],
-                    ),
+                itemBuilder: (context, i) {
+                  return CardTask(
+                    i: i,
+                    textColor:
+                        textcolors[i > textcolors.length - 1
+                            ? i - textcolors.length
+                            : i],
+                    backgroundColor:
+                        colors[i > colors.length - 1
+                            ? i - textcolors.length
+                            : i],
+                    data: snapshot.data[i],
+                  );
+                },
                 itemCount: snapshot.data.length,
                 // onReorder: (oldIndex, newIndex) {
                 //   setState(() {
@@ -105,7 +112,7 @@ class _MainScreenState extends State<MainScreen> {
                           break;
                         default:
                           setModalState(() {
-                            margin = 20.0;
+                            margin = 0.0;
                           });
                       }
 
