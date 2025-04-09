@@ -56,14 +56,8 @@ class _MainScreenState extends State<MainScreen> {
                 itemBuilder: (context, i) {
                   return CardTask(
                     i: i,
-                    textColor:
-                        textcolors[i > textcolors.length - 1
-                            ? i - textcolors.length
-                            : i],
-                    backgroundColor:
-                        colors[i > colors.length - 1
-                            ? i - textcolors.length
-                            : i],
+                    textColor: textcolors[i % textcolors.length],
+                    backgroundColor: colors[i % colors.length],
                     data: snapshot.data[i],
                   );
                 },
